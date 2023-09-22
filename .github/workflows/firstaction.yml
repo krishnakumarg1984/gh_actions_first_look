@@ -14,30 +14,48 @@ on:
 env:
   name: Krishna
 jobs:
-  build:
+  build_project:
+    name: Build Project
     runs-on: ubuntu-latest
-    env:
-      name: K Kumar
     steps:
-      - name: Run shell commands for echoing expressions
-        run: |
-          echo Hello, $name!
-          echo Actor: ${{ github.actor }}
-          echo Committed by: ${{ github.event.commits[0].author.name }}
-  dump:
-    runs-on: ubuntu-latest
-    env:
-      GITHUB_CONTEXT: ${{ toJson(github) }}
-    steps:
-      - name: Echo github context json
-        run: echo "$GITHUB_CONTEXT"       
-  pull_requests_only:
-    needs: [build]
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-    steps:
-      - name: Run a multi-line script
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project. 
-          echo hi, $name!
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
+      - name: Install
+        run: npm install
+      - name: Build
+        run: npm run build
+      - name: Deploy
+        uses: demurgos/ga-deploy-git@v1
+        with:
+          accessToken: ${{ secrets.ACCESS_TOKEN }}
+          srcDir: build
+          destBranch: gh-pages
+  # build:
+  #   runs-on: ubuntu-latest
+  #   env:
+  #     name: K Kumar
+  #   steps:
+  #     - name: Run shell commands for echoing expressions
+  #       run: |
+  #         echo Hello, $name!
+  #         echo Actor: ${{ github.actor }}
+  #         echo Committed by: ${{ github.event.commits[0].author.name }}
+  # dump:
+  #   runs-on: ubuntu-latest
+  #   env:
+  #     GITHUB_CONTEXT: ${{ toJson(github) }}
+  #   steps:
+  #     - name: Echo github context json
+  #       run: echo "$GITHUB_CONTEXT"       
+  # pull_requests_only:
+  #   needs: [build]
+  #   runs-on: ubuntu-latest
+  #   if: github.event_name == 'pull_request'
+  #   steps:
+  #     - name: Run a multi-line script
+  #       run: |
+  #         echo Add other actions to build,
+  #         echo test, and deploy your project. 
+  #         echo hi, $name!
