@@ -19,8 +19,18 @@ jobs:
     env:
       name: K Kumar
     steps:
-      - name: Run a one-line script
-        run: echo Hello, $name!
+      - name: Run some shell commands
+        run: |
+          echo Hello, $name!
+          echo Actor: ${{ github.actor }}
+          echo Committed by: ${{ github.event.commits[0].author.name }}
+  dump:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_CONTEXT: ${{ toJtoJson(github) }}
+    steps:
+      - name: Echo Github Context
+        run: echo "$GITHUB_CONTEXT"     
   pull_requests_only:
     needs: [build]
     runs-on: ubuntu-latest
